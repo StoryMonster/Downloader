@@ -11,8 +11,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Map;
-import java.util.Vector;
 import java.awt.Toolkit;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
@@ -21,10 +19,11 @@ import java.util.Vector;
 import java.util.Map;
 
 import services.DownloadService;
+import surface.RunningTaskList;
 
 public class MainSurface extends JFrame {
     String fileSaveDirectory = System.getProperties().getProperty("user.home");
-    JList lstDownloadingFiles = null;
+    RunningTaskList lstDownloadingFiles = new RunningTaskList();
     JButton btnDlConfirm = new JButton("Download");
     JFileChooser fChooser = new JFileChooser(fileSaveDirectory);
     JLabel lblSaveTo = new JLabel("Save to " + fileSaveDirectory);
@@ -32,7 +31,6 @@ public class MainSurface extends JFrame {
     JLabel lblSaveAs = new JLabel("Save as ");
     JTextField txtDlFrom = new JTextField();
     JTextField txtSaveAs = new JTextField();
-    DefaultListModel<String> listModel = new DefaultListModel<String>();
     DownloadService dlService = new DownloadService();
 
 
@@ -61,7 +59,6 @@ public class MainSurface extends JFrame {
     {
         GridLayout layout = new GridLayout(1, 1);
         panel.setLayout(layout);
-        lstDownloadingFiles = new JList<String>(listModel);
         panel.add(lstDownloadingFiles);
     }
 
@@ -147,8 +144,12 @@ public class MainSurface extends JFrame {
                 }
                 if (dlService.addDownloadTask(remoteFileAddr, remoteFileAddr, fileSaveDirectory+"/"+saveAs))
                 {
-                    listModel.addElement(remoteFileAddr);
+                    lstDownloadingFiles.addElement(remoteFileAddr);
                     dlService.startDownload(remoteFileAddr);
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null, "Can't create task");
                 }
             }
         });
