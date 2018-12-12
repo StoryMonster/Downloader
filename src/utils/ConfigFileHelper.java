@@ -10,6 +10,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.dom.DOMSource;
 import org.w3c.dom.*;
+import context.MainSurfaceContext;
 
 public class ConfigFileHelper{
     String fileName;
@@ -100,13 +101,74 @@ public class ConfigFileHelper{
         }
     }
 
-    public Context getMainSurfaceContext()
+    private Node findNodeByAttribute(NodeList lst, String attrName, String value)
     {
-        NodeList contexts = root.getElementsByTagName("context");
-        int contextsAmount = contexts.getLength();
-        for (int i = 0; i < contextsAmount; ++i)
+        int length = lst.getLength();
+        for (int i = 0; i < length; ++i)
         {
-            
+            Node node = lst.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE && node.hasAttributes())
+            {
+                NamedNodeMap attrs = node.getAttributes();
+                Node attr = attrs.getNamedItem(attrName);
+                if (attr != null && attr.getTextContent().compareTo(value) == 0)
+                {
+                    return node;
+                }
+            }
+        }
+        return null;
+    }
+
+    public MainSurfaceContext getMainSurfaceContext()
+    {
+        NodeList contextNodes = root.getElementsByTagName("context");
+        Node contextNode = findNodeByAttribute(contextNodes, "owner", "MainSurface");
+        if (contextNode == null) {
+            System.out.println("Cannot find MainSurface context");
+            return null;
+        }
+        MainSurfaceContext context = new MainSurfaceContext();
+        NodeList contextMembers = contextNode.getChildNodes();
+        for (int i = 0; i < contextMembers.getLength(); ++i)
+        {
+             Node member = contextMembers.item(i);
+             if (member.getNodeType() == Node.ELEMENT_NODE)
+             {
+                 String text = member.getTextContent();
+                 switch(member.getNodeName())
+                 {
+                     case "lastSaveDir": context.lastSaveDir = text; break;
+                     case "height": context.height = Integer.parseInt(text); break;
+                     case "width": context.width = Integer.parseInt(text); break;
+                 }
+             }
+        }
+        return context;
+    }
+
+    public void updateMainSurfaceContext(MainSurfaceContext context)
+    {
+        NodeList contextNodes = root.getElementsByTagName("context");
+        Node contextNode = findNodeByAttribute(contextNodes, "owner", "MainSurface");
+        if (contextNode == null) {
+            System.out.println("Cannot find MainSurface context");
+            return ;
+        }
+        NodeList contextMembers = contextNode.getChildNodes();
+        for (int i = 0; i < contextMembers.getLength(); ++i)
+        {
+             Node member = contextMembers.item(i);
+             if (member.getNodeType() == Node.ELEMENT_NODE)
+             {
+                 String text = member.getTextContent();
+                 switch(member.getNodeName())
+                 {
+                     case "lastSaveDir": member.setTextContent(context.lastSaveDir); break;
+                     case "height": member.setTextContent(String.format("%d", context.height)); break;
+                     case "width": member.setTextContent(String.format("%d", context.width)); break;
+                 }
+             }
         }
     }
 }

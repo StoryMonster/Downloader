@@ -20,28 +20,36 @@ import java.util.Map;
 
 import services.DownloadService;
 import surface.RunningTaskList;
+import context.MainSurfaceContext;
 
 public class MainSurface extends JFrame {
-    String fileSaveDirectory = System.getProperties().getProperty("user.home");
     RunningTaskList lstDownloadingFiles = new RunningTaskList();
     JButton btnDlConfirm = new JButton("Download");
-    JFileChooser fChooser = new JFileChooser(fileSaveDirectory);
-    JLabel lblSaveTo = new JLabel("Save to " + fileSaveDirectory);
     JLabel lblDlFrom = new JLabel("Download from ");
     JLabel lblSaveAs = new JLabel("Save as ");
     JTextField txtDlFrom = new JTextField();
     JTextField txtSaveAs = new JTextField();
     DownloadService dlService = new DownloadService();
+    MainSurfaceContext context;
+    JFileChooser fChooser;
+    JLabel lblSaveTo;
 
-
-    public MainSurface(Dimension frameSize) {
+    public MainSurface(MainSurfaceContext context) {
         super("Downloader");
+        this.context = context;
+        this.fChooser = new JFileChooser(context.lastSaveDir);
+        this.lblSaveTo = new JLabel("Save to " + context.lastSaveDir);
+        initSurface();
+    }
+
+    private void initSurface()
+    {
         setVisible(true);
-        setPreferredSize(frameSize);
+        setPreferredSize(new Dimension(context.width, context.height));
         setDefaultLookAndFeelDecorated(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Dimension screenSize =Toolkit.getDefaultToolkit().getScreenSize();
-        setLocation((screenSize.width -  frameSize.width)/2, (screenSize.height - frameSize.height)/2);
+        setLocation((screenSize.width -  context.width)/2, (screenSize.height - context.height)/2);
         setLayout(new GridLayout(1, 2));
 
         JPanel dlCfgPanel = new JPanel();
@@ -127,8 +135,8 @@ public class MainSurface extends JFrame {
         fChooser.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                fileSaveDirectory = fChooser.getSelectedFile().getPath();
-                lblSaveTo.setText("Save to " + fileSaveDirectory);
+                context.lastSaveDir = fChooser.getSelectedFile().getPath();
+                lblSaveTo.setText("Save to " + context.lastSaveDir);
             }
         });
 
@@ -137,12 +145,12 @@ public class MainSurface extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String remoteFileAddr = txtDlFrom.getText();
                 String saveAs = txtSaveAs.getText();
-                if (remoteFileAddr.length() == 0 || saveAs.length() == 0 || fileSaveDirectory.length() == 0 )
+                if (remoteFileAddr.length() == 0 || saveAs.length() == 0 || context.lastSaveDir.length() == 0 )
                 {
                     JOptionPane.showMessageDialog(null, "Fill neccessary fields at first");
                     return;
                 }
-                String savedFile = fileSaveDirectory+"/"+saveAs;
+                String savedFile = context.lastSaveDir+"/"+saveAs;
                 if (dlService.addDownloadTask(remoteFileAddr, remoteFileAddr, savedFile))
                 {
                     lstDownloadingFiles.addRunningTask("BiuBiuBiu", remoteFileAddr, savedFile);

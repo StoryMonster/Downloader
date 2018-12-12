@@ -1,12 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<root>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><root>
   <context owner="MainSurface">
-    <lastSaveDir>.</lastSaveDir>
+    <lastSaveDir>C:\Users\story\Desktop</lastSaveDir>
     <width>1024</width>
     <height>600</height>
-  </context>
-
-  <context owner="FileDownloader">
-    <recvBuffSize>1024</recvBuffSize>
   </context>
 </root>
