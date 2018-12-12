@@ -142,9 +142,10 @@ public class MainSurface extends JFrame {
                     JOptionPane.showMessageDialog(null, "Fill neccessary fields at first");
                     return;
                 }
-                if (dlService.addDownloadTask(remoteFileAddr, remoteFileAddr, fileSaveDirectory+"/"+saveAs))
+                String savedFile = fileSaveDirectory+"/"+saveAs;
+                if (dlService.addDownloadTask(remoteFileAddr, remoteFileAddr, savedFile))
                 {
-                    lstDownloadingFiles.addElement(remoteFileAddr);
+                    lstDownloadingFiles.addRunningTask("BiuBiuBiu", remoteFileAddr, savedFile);
                     dlService.startDownload(remoteFileAddr);
                 }
                 else
