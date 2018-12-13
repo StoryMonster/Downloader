@@ -12,11 +12,11 @@ import javax.xml.transform.dom.DOMSource;
 import org.w3c.dom.*;
 import context.MainSurfaceContext;
 
-public class ConfigFileHelper{
+public class ConfigHelper{
     String fileName;
     Element root = null;
     Document doc = null;
-    public ConfigFileHelper(String filename)
+    public ConfigHelper(String filename)
     {
         this.fileName = filename;
         try {
@@ -138,7 +138,8 @@ public class ConfigFileHelper{
                  String text = member.getTextContent();
                  switch(member.getNodeName())
                  {
-                     case "lastSaveDir": context.lastSaveDir = text; break;
+                     case "localSaveDir": context.localSaveDir = text; break;
+                     case "remoteFilePath": context.remoteFilePath = text; break;
                      case "height": context.height = Integer.parseInt(text); break;
                      case "width": context.width = Integer.parseInt(text); break;
                  }
@@ -164,7 +165,8 @@ public class ConfigFileHelper{
                  String text = member.getTextContent();
                  switch(member.getNodeName())
                  {
-                     case "lastSaveDir": member.setTextContent(context.lastSaveDir); break;
+                     case "localSaveDir": member.setTextContent(context.localSaveDir); break;
+                     case "remoteFilePath": member.setTextContent(context.remoteFilePath); break;
                      case "height": member.setTextContent(String.format("%d", context.height)); break;
                      case "width": member.setTextContent(String.format("%d", context.width)); break;
                  }

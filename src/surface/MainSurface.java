@@ -20,6 +20,7 @@ import java.util.Map;
 
 import services.DownloadService;
 import surface.RunningTaskList;
+import utils.FileHelper;
 import context.MainSurfaceContext;
 
 public class MainSurface extends JFrame {
@@ -27,18 +28,24 @@ public class MainSurface extends JFrame {
     JButton btnDlConfirm = new JButton("Download");
     JLabel lblDlFrom = new JLabel("Download from ");
     JLabel lblSaveAs = new JLabel("Save as ");
-    JTextField txtDlFrom = new JTextField();
     JTextField txtSaveAs = new JTextField();
     DownloadService dlService = new DownloadService();
-    MainSurfaceContext context;
-    JFileChooser fChooser;
-    JLabel lblSaveTo;
+    MainSurfaceContext context = null;
+    JFileChooser fChooser = null;
+    JLabel lblSaveTo = null;
+    JTextField txtDlFrom = null;
 
     public MainSurface(MainSurfaceContext context) {
         super("Downloader");
         this.context = context;
-        this.fChooser = new JFileChooser(context.lastSaveDir);
-        this.lblSaveTo = new JLabel("Save to " + context.lastSaveDir);
+        if (!FileHelper.isDir(context.localSaveDir))
+        {
+            context.localSaveDir = ".";
+        }
+        this.fChooser = new JFileChooser(context.localSaveDir);
+        this.lblSaveTo = new JLabel("Save to " + context.localSaveDir);
+        this.txtDlFrom = new JTextField(context.remoteFilePath);
+
         initSurface();
     }
 
@@ -135,8 +142,8 @@ public class MainSurface extends JFrame {
         fChooser.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                context.lastSaveDir = fChooser.getSelectedFile().getPath();
-                lblSaveTo.setText("Save to " + context.lastSaveDir);
+                context.localSaveDir = fChooser.getSelectedFile().getPath();
+                lblSaveTo.setText("Save to " + context.localSaveDir);
             }
         });
 
@@ -144,16 +151,19 @@ public class MainSurface extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String remoteFileAddr = txtDlFrom.getText();
-                String saveAs = txtSaveAs.getText();
-                if (remoteFileAddr.length() == 0 || saveAs.length() == 0 || context.lastSaveDir.length() == 0 )
+                if (remoteFileAddr.length() == 0 || context.localSaveDir.length() == 0 )
                 {
                     JOptionPane.showMessageDialog(null, "Fill neccessary fields at first");
                     return;
                 }
-                String savedFile = context.lastSaveDir+"/"+saveAs;
-                if (dlService.addDownloadTask(remoteFileAddr, remoteFileAddr, savedFile))
+                String fileNameToSave = txtSaveAs.getText();
+                fileNameToSave = fileNameToSave.length() != 0 ? fileNameToSave : FileHelper.getFileNameByPath(remoteFileAddr);
+                txtSaveAs.setText(fileNameToSave);
+                context.remoteFilePath = remoteFileAddr;
+                String savedFilePath = context.localSaveDir+"/"+fileNameToSave;
+                if (dlService.addDownloadTask(remoteFileAddr, remoteFileAddr, savedFilePath))
                 {
-                    lstDownloadingFiles.addRunningTask("BiuBiuBiu", remoteFileAddr, savedFile);
+                    lstDownloadingFiles.addRunningTask("BiuBiuBiu", remoteFileAddr, savedFilePath);
                     dlService.startDownload(remoteFileAddr);
                 }
                 else

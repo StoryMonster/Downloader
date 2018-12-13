@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><root>
   <context owner="MainSurface">
-    <lastSaveDir>C:\Users\story\Desktop</lastSaveDir>
+    <localSaveDir>D:\userdata\dochen\Desktop</localSaveDir>
+    <remoteFilePath>http://zuule1.dynamic.nsn-net.net/</remoteFilePath>
     <width>1024</width>
     <height>600</height>
   </context>
