@@ -36,12 +36,18 @@ public class DownloadService {
     {
         if (runningTasks.containsKey(taskName))
         {
-            System.out.println("start to download");
-            runningTasks.get(taskName).download();
-            System.out.println("download success");
-            return true;
+            FileDownloader task = runningTasks.get(taskName);
+            try 
+            {
+                task.download();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
         }
-        System.out.println("download fail");
+        System.out.println("Cannot find task " + taskName);
         return false;
     }
 }

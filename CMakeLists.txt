@@ -18,6 +18,7 @@ add_jar(Downloader
         src/surface/RunningTaskList.java
         src/services/DownloadService.java
         src/network/FileDownloader.java
+        src/network/DownloadStatus.java
         src/utils/ConfigHelper.java
         src/utils/FileHelper.java
         src/context/MainSurfaceContext.java)

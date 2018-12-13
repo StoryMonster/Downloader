@@ -5,12 +5,14 @@ import java.net.HttpURLConnection;
 import java.io.FileOutputStream;
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import network.DownloadStatus;
 
 public class FileDownloader {
     URL remoteUrl = null;
     String fileToSave;
     long receivedBytesAmount = 0;
     long totalBytesOfRemoteFile = 0;
+    DownloadStatus status = DownloadStatus.analyzing;
 
     public FileDownloader(String remoteFileAddress, String fileToSave)
     {
@@ -26,6 +28,7 @@ public class FileDownloader {
         }
         catch (Exception e)
         {
+            status = DownloadStatus.fail;
             throw new RuntimeException(e);
         }
     }
@@ -37,6 +40,7 @@ public class FileDownloader {
     public long download()
     {
         try {
+            status = DownloadStatus.downloading;
             BufferedInputStream in = new BufferedInputStream(remoteUrl.openStream());
             FileOutputStream outStream = new FileOutputStream(fileToSave);
             byte data[] = new byte[1024];
@@ -48,15 +52,17 @@ public class FileDownloader {
             }
             in.close();
             outStream.close();
+            status = DownloadStatus.complete;
             return receivedBytesAmount;
         }
         catch (IOException e) {
+            status = DownloadStatus.fail;
             throw new RuntimeException(e);
         }   
     }
 
     public boolean downloadSuccess()
     {
-        return receivedBytesAmount == totalBytesOfRemoteFile;
+        return status == DownloadStatus.complete;
     }
 }

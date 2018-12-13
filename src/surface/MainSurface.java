@@ -15,10 +15,6 @@ import java.awt.Toolkit;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.util.Vector;
-import java.util.Map;
-
-import services.DownloadService;
 import surface.RunningTaskList;
 import utils.FileHelper;
 import context.MainSurfaceContext;
@@ -29,7 +25,6 @@ public class MainSurface extends JFrame {
     JLabel lblDlFrom = new JLabel("Download from ");
     JLabel lblSaveAs = new JLabel("Save as ");
     JTextField txtSaveAs = new JTextField();
-    DownloadService dlService = new DownloadService();
     MainSurfaceContext context = null;
     JFileChooser fChooser = null;
     JLabel lblSaveTo = null;
@@ -38,10 +33,7 @@ public class MainSurface extends JFrame {
     public MainSurface(MainSurfaceContext context) {
         super("Downloader");
         this.context = context;
-        if (!FileHelper.isDir(context.localSaveDir))
-        {
-            context.localSaveDir = ".";
-        }
+        context.localSaveDir = FileHelper.isDir(context.localSaveDir) ? context.localSaveDir : ".";
         this.fChooser = new JFileChooser(context.localSaveDir);
         this.lblSaveTo = new JLabel("Save to " + context.localSaveDir);
         this.txtDlFrom = new JTextField(context.remoteFilePath);
@@ -161,10 +153,11 @@ public class MainSurface extends JFrame {
                 txtSaveAs.setText(fileNameToSave);
                 context.remoteFilePath = remoteFileAddr;
                 String savedFilePath = context.localSaveDir+"/"+fileNameToSave;
-                if (dlService.addDownloadTask(remoteFileAddr, remoteFileAddr, savedFilePath))
+                String taskName = String.copyValueOf(remoteFileAddr.toCharArray());
+
+                if (lstDownloadingFiles.addRunningTask(taskName, remoteFileAddr, savedFilePath))
                 {
-                    lstDownloadingFiles.addRunningTask("BiuBiuBiu", remoteFileAddr, savedFilePath);
-                    dlService.startDownload(remoteFileAddr);
+                    lstDownloadingFiles.startDownload(taskName);
                 }
                 else
                 {

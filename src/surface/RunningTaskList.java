@@ -10,11 +10,14 @@ import java.awt.Component;
 import java.awt.Color;
 import java.awt.GridLayout;
 
+import network.DownloadStatus;
+import services.DownloadService;
+
 class TaskLabel {
     String taskName;
     String srcAddr;
     String localAddr;
-    String status = "CREATING";
+    DownloadStatus status = DownloadStatus.analyzing;
 
     public TaskLabel(String taskName, String srcAddr, String localAddr)
     {
@@ -27,26 +30,41 @@ class TaskLabel {
     status: new status
     return: old status
     */
-    public String changeStatus(String status)
+    public DownloadStatus changeStatus(DownloadStatus status)
     {
-        String oldStatus = this.status;
+        DownloadStatus oldStatus = this.status;
         this.status = status;
         return oldStatus;
     }
 
+    private String getStatusColor()
+    {
+        switch (status) {
+            case downloading : return "Green";
+            case analyzing: return "Yellow";
+            case complete: return "Green";
+            case fail: return "Red";
+        }
+        System.out.println("Unkown status");
+        return "Yellow";
+    }
+
     @Override
-    public String toString() { 
+    public String toString() {
+        String statusColor = getStatusColor();
         return String.format(
             "<html>" +
             "<h4>%s<br>" +
             "download from %s<br>" +
             "save to %s<br>" +
-            "<h4>%s" +
-            "</html>", this.taskName, this.srcAddr, this.localAddr, this.status);
+            "<font color=%s>%s</font>" +
+            "</html>", this.taskName, this.srcAddr, this.localAddr, statusColor, this.status);
     } 
 }
+
 public class RunningTaskList extends JList<TaskLabel> {
     DefaultListModel<TaskLabel> listModel = new DefaultListModel<TaskLabel>();
+    DownloadService dlService = new DownloadService();
 
     public RunningTaskList() {
         setModel(listModel);
@@ -57,8 +75,7 @@ public class RunningTaskList extends JList<TaskLabel> {
         setCellRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list,
-                    Object value, int index, boolean isSelected,
-                    boolean cellHasFocus) {
+                    Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 JLabel listCellRendererComponent = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 listCellRendererComponent.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
                 return listCellRendererComponent;
@@ -66,10 +83,33 @@ public class RunningTaskList extends JList<TaskLabel> {
         });
     }
 
-    public void addRunningTask(String taskName, String remoteAddr, String localAddr)
+    public boolean addRunningTask(String taskName, String remoteAddr, String localAddr)
     {
-        TaskLabel elem = new TaskLabel(taskName, remoteAddr, localAddr);
-        elem.changeStatus("DOWNLOADING");
-        listModel.addElement(elem);
+        if (dlService.addDownloadTask(taskName, remoteAddr, localAddr))
+        {
+            TaskLabel elem = new TaskLabel(taskName, remoteAddr, localAddr);
+            listModel.addElement(elem);
+            return true;
+        }
+        return false;
+    }
+
+    public void startDownload(String taskName)
+    {
+        updateTaskStatus(taskName);
+        dlService.startDownload(taskName);
+    }
+
+    public void updateTaskStatus(String taskName)
+    {
+        for (int i = 0; i < listModel.getSize(); ++i)
+        {
+            TaskLabel elem = listModel.getElementAt(i);
+            if (elem.taskName == taskName)
+            {
+                elem.changeStatus(DownloadStatus.downloading);
+                return;
+            }
+        }
     }
 }
