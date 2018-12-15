@@ -1,76 +1,15 @@
 package surface;
 
 import javax.swing.JList;
-import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.DefaultListCellRenderer;
 
 import java.awt.Component;
 import java.awt.Color;
 import java.awt.GridLayout;
-
-import network.DownloadStatusRef;
-import network.FileDownloader;
-
-class TaskLabel {
-    String taskName;
-    String srcAddr;
-    String localAddr;
-    DownloadStatusRef status;
-    FileDownloader downloader;
-
-    public TaskLabel(String taskName, String srcAddr, String localAddr)
-    {
-        this.taskName = taskName;
-        this.srcAddr = srcAddr;
-        this.localAddr = localAddr;
-        this.status = new DownloadStatusRef();
-        this.downloader = new FileDownloader(srcAddr, localAddr, this.status);
-    }
-
-    public String getName()
-    {
-        return taskName;
-    }
-
-    public void startDownload()
-    {
-        downloader.download();
-    }
-
-    private String getStatusColor()
-    {
-        switch (status.value) {
-            case downloading : return "Green";
-            case analyzing: return "Black";
-            case complete: return "Green";
-            case fail: return "Red";
-        }
-        System.out.println("Unkown status");
-        return "Black";
-    }
-
-    @Override
-    public String toString() {
-        String statusColor = getStatusColor();
-        return String.format(
-            "<html>" +
-            "<h4>%s<br>" +
-            "download from %s<br>" +
-            "save to %s<br>" +
-            "<font color=%s>%s</font>" +
-            "</html>", this.taskName, this.srcAddr, this.localAddr, statusColor, status.toString());
-    }
-}
-
-class TaskListModel extends DefaultListModel<TaskLabel>{
-    public void updateContext(String name)
-    {
-        fireContentsChanged(this, 0, 0);
-    }
-}
+import surface.TaskListModel;
+import surface.TaskLabel;
 
 public class RunningTaskList extends JList<TaskLabel> {
     TaskListModel listModel = new TaskListModel();
@@ -94,40 +33,18 @@ public class RunningTaskList extends JList<TaskLabel> {
 
     public boolean addRunningTask(String taskName, String remoteAddr, String localAddr)
     {
-        try
-        {
-            TaskLabel elem = new TaskLabel(taskName, remoteAddr, localAddr);
-            listModel.addElement(elem);
-            listModel.updateContext(taskName);
-            return true;
-        } catch(Exception e)
-        {
-            return false;
-        }
+        listModel.addTask(taskName, remoteAddr, localAddr);
+        return true;
     }
 
-    private TaskLabel findTaskByName(String name)
+    public TaskLabel getTask(String taskName)
     {
-        for (int i = 0; i < listModel.getSize(); ++i)
-        {
-            TaskLabel task = listModel.getElementAt(i);
-            if (name.compareTo(task.getName()) == 0)
-            {
-                return task;
-            }
-        }
-        return null;
+        return listModel.getTask(taskName);
     }
 
-    public void startDownload(String taskName)
+    public void deleteTask(String taskName)
     {
-        TaskLabel task = findTaskByName(taskName);
-        if (task == null)
-        {
-            System.out.println("Cannot find task " + taskName);
-            return;
-        }
-        task.startDownload();
-        listModel.updateContext(taskName);
+        listModel.deleteTask(taskName);
     }
+
 }

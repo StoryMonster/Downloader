@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><root>
   <context owner="MainSurface">
-    <localSaveDir>D:\userdata\dochen\Desktop</localSaveDir>
-    <remoteFilePath>http://zuule1.dynamic.nsn-net.net/</remoteFilePath>
+    <localSaveDir>C:\Users\story\Desktop</localSaveDir>
+    <remoteFilePath>https://dl-download.csdn.net/down11/20161229/6bbb4e77758f331c556d939c2140ccd3.zip?response-content-disposition=attachment%3Bfilename%3D%22SearchEngine.zip%22&amp;OSSAccessKeyId=9q6nvzoJGowBj4q1&amp;Expires=1544544328&amp;Signature=s8iGFJJNOSVZKi8XEWIwXmE%2B2nU%3D&amp;user=storymonster&amp;sourceid=9725034&amp;sourcescore=9&amp;isvip=0/WHJMrwNw1k%252FEOd2zVgmbPruNYqN8%252BXtHvErwTxiSeL9k3cj8CA4rjJuGcrgN78uXtbwhiNXiWFvh26D%252BRZCn0TswzgnaXxdyXRAvfQdLcoDFxDPMcyYxzNjzKpMz452nQ5Yi6xytpsesfhwDCeHJsqFqRPoL7FhKirjl%252Bd2XxfViUkC6Wjxu6X4wlNrsG1vCJNmwgTPXDoBVKqXVNjip7LoBzSlMvr5PEynXiS614bb90JbW2V3IPOSy%252BI0d%252B1L2ikFbY1mRhwFJNDMFkC520HA%253D%253D1487582755342</remoteFilePath>
     <width>1024</width>
     <height>600</height>
   </context>

@@ -5,7 +5,8 @@ import java.net.HttpURLConnection;
 import java.io.FileOutputStream;
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import network.DownloadStatusRef;
+import surface.TaskLabel;
+import network.DownloadStatus;
 
 
 class DownloadThread extends Thread {
@@ -13,23 +14,23 @@ class DownloadThread extends Thread {
     URL remoteUrl;
     String fileToSave;
     long fileSize;
-    DownloadStatusRef status;
     long receivedBytesAmount = 0;
+    TaskLabel label;
 
-    public DownloadThread(String name, URL remoteUrl, String fileToSave, long fileSize, DownloadStatusRef status)
+    public DownloadThread(String name, URL remoteUrl, String fileToSave, long fileSize, TaskLabel label)
     {
         super(name);
         this.name = name;
         this.remoteUrl = remoteUrl;
         this.fileToSave = fileToSave;
         this.fileSize = fileSize;
-        this.status = status;
+        this.label = label;
     }
 
     public void run()
     {
         try {
-            status.value = DownloadStatus.downloading;
+            label.updateStatus(DownloadStatus.downloading);
             BufferedInputStream in = new BufferedInputStream(remoteUrl.openStream());
             FileOutputStream outStream = new FileOutputStream(fileToSave);
             byte data[] = new byte[1024];
@@ -43,10 +44,10 @@ class DownloadThread extends Thread {
             in.close();
             outStream.close();
             System.out.println("Thread " + name + " done");
-            status.value = DownloadStatus.complete;
+            label.updateStatus(DownloadStatus.complete);
         } catch (Exception e) {
             System.out.println("Thread " + name + " abort");
-            status.value = DownloadStatus.fail;
+            label.updateStatus(DownloadStatus.fail);
         }
     }
 }
@@ -55,29 +56,38 @@ public class FileDownloader {
     URL remoteUrl = null;
     String fileToSave;
     long fileSize = 0;
-    DownloadStatusRef status;
     DownloadThread dlThread;
+    TaskLabel label;
 
-    public FileDownloader(String remoteFileAddress, String fileToSave, DownloadStatusRef status)
+    public FileDownloader(String remoteFileAddress, String fileToSave, TaskLabel label)
     {
         try
         {
             System.out.println("Creating downloader");
-            this.status = status;
-            this.status.setValue(DownloadStatus.analyzing);
-            remoteUrl = new URL(remoteFileAddress);
+            this.remoteUrl = new URL(remoteFileAddress);
             this.fileToSave = fileToSave;
+            this.label = label;
+        }
+        catch (Exception e)
+        {
+            label.updateStatus(DownloadStatus.fail);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void analyzeRemoteFile()
+    {
+        label.updateStatus(DownloadStatus.analyzing);
+        try {
             HttpURLConnection conn = (HttpURLConnection) remoteUrl.openConnection();
             conn.setRequestMethod("GET");
             fileSize = conn.getContentLengthLong();
             conn.disconnect();
             System.out.println("remote file size: " + fileSize + "bytes");
-            Thread.sleep(1000);
-        }
-        catch (Exception e)
-        {
-            status.value = DownloadStatus.fail;
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            label.updateStatus(DownloadStatus.fail);
+            System.out.println("Analyze remote file fail");
+            throw new RuntimeException("Analyze remote file fail");
         }
     }
 
@@ -87,17 +97,7 @@ public class FileDownloader {
 
     public void download()
     {
-        dlThread = new DownloadThread("name", remoteUrl, fileToSave, fileSize, status);
+        dlThread = new DownloadThread("name", remoteUrl, fileToSave, fileSize, label);
         dlThread.start();
-    }
-
-    public boolean downloadSuccess()
-    {
-        return status.value == DownloadStatus.complete;
-    }
-
-    public DownloadStatusRef getStatus()
-    {
-        return status;
     }
 }
