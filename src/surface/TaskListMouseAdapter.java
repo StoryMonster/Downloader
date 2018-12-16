@@ -36,7 +36,6 @@ public class TaskListMouseAdapter extends MouseAdapter {
             }
         });
 
-
         popup = new JPopupMenu();
         popup.add(downloadItem);
         popup.add(deleteItem);

@@ -15,7 +15,8 @@ class DownloadThread extends Thread {
     String fileToSave;
     long fileSize;
     long receivedBytesAmount = 0;
-    int receiveBufferSize = 1024;
+    long lastReceivedBytes = 0;
+    int receiveBufferSize = 10*1024;
     DownloadTask dlTask;
 
     public DownloadThread(String remoteAddr, URL remoteUrl, String fileToSave, long fileSize, DownloadTask dlTask)
@@ -28,6 +29,20 @@ class DownloadThread extends Thread {
         this.dlTask = dlTask;
     }
 
+    public double getDownloadedRate()
+    {
+        return receivedBytesAmount * 1.0 / fileSize;
+    }
+
+    public long getNewlyDownloadedSize()
+    {
+        long tempReceivedBytesAmount = receivedBytesAmount;
+        long newlyDownloadedSize = tempReceivedBytesAmount - lastReceivedBytes;
+        lastReceivedBytes = tempReceivedBytesAmount;
+        System.out.println("delta = " + (long)newlyDownloadedSize);
+        return newlyDownloadedSize;
+    }
+
     public void run()
     {
         try {
@@ -38,8 +53,8 @@ class DownloadThread extends Thread {
             int byteContent;
             while (dlTask.getStatus() == DownloadStatus.downloading && (byteContent = in.read(data, 0, receiveBufferSize)) != -1) {
                 outStream.write(data, 0, byteContent);
-                receivedBytesAmount = receivedBytesAmount + byteContent;
-                System.out.println(receivedBytesAmount+"/"+fileSize);
+                receivedBytesAmount += byteContent;
+                System.out.println(receivedBytesAmount*100.0/fileSize + "%");
             }
             in.close();
             outStream.close();
@@ -61,7 +76,7 @@ public class FileDownloader {
     String fileToSave;
     String remoteFileAddr;
     long fileSize = -1;
-    DownloadThread dlThread;
+    DownloadThread dlThread = null;
     DownloadTask dlTask;
 
     public FileDownloader(String remoteFileAddress, String fileToSave, DownloadTask dlTask)
@@ -100,6 +115,18 @@ public class FileDownloader {
 
     public long getRemoteFileSize() {
         return fileSize;
+    }
+
+    public double getDownloadedRate()
+    {
+        if (dlTask.getStatus() != DownloadStatus.downloading) { return -1; }
+        return dlThread.getDownloadedRate();
+    }
+
+    public long getNewlyDownloadedSize()
+    {
+        if (dlTask.getStatus() != DownloadStatus.downloading) { return -1; }
+        return dlThread.getNewlyDownloadedSize();
     }
 
     public void download()

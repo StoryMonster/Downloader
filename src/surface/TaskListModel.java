@@ -4,10 +4,20 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.DefaultListModel;
+import java.util.Timer;
 
 import surface.DownloadTask;
+import surface.TaskListModelPeriodicUpdateTask;
 
 public class TaskListModel extends DefaultListModel<DownloadTask>{
+    Timer timer = null;
+    long contentUpdatePeriod = 1000;   // ms
+
+    public TaskListModel() {
+        timer = new Timer();
+        timer.schedule(new TaskListModelPeriodicUpdateTask(this), 0, contentUpdatePeriod);
+    }
+
     public void updateElementContent(String name)
     {
         for (int i = 0; i < getSize(); ++i)
@@ -18,6 +28,14 @@ public class TaskListModel extends DefaultListModel<DownloadTask>{
                 System.out.println(String.format("content of element(index=%d) is changed", i));
                 return ;
             }
+        }
+    }
+
+    public void updateAllElementsContent()
+    {
+        for (int i = 0; i < getSize(); ++i)
+        {
+            getElementAt(i).updateContent();
         }
     }
 

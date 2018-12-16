@@ -19,9 +19,10 @@ add_jar(Downloader
         src/surface/DownloadTask.java
         src/surface/TaskListModel.java
         src/surface/TaskListMouseAdapter.java
+        src/surface/TaskListModelPeriodicUpdateTask.java
         src/network/FileDownloader.java
         src/network/DownloadStatus.java
         src/utils/ConfigHelper.java
         src/utils/FileHelper.java
-        src/utils/StreamLengthHelper.java
+        src/utils/HumanReadHelper.java
         src/context/MainSurfaceContext.java)

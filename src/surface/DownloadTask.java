@@ -4,7 +4,7 @@ import javax.swing.JLabel;
 
 import network.DownloadStatus;
 import network.FileDownloader;
-import utils.StreamLengthHelper;
+import utils.HumanReadHelper;
 
 public class DownloadTask extends JLabel{
     String taskName;
@@ -18,6 +18,7 @@ public class DownloadTask extends JLabel{
         this.taskName = taskName;
         this.srcAddr = srcAddr;
         this.localAddr = localAddr;
+        updateContent();
         this.downloader = new FileDownloader(srcAddr, localAddr, this);
     }
 
@@ -73,24 +74,32 @@ public class DownloadTask extends JLabel{
         }
     }
 
-    private void updateContent()
+    public void updateContent()
     {
-        setText(this.toString());
-    }
-
-    @Override
-    public String toString() {
         String statusColor = getStatusColor();
         String content;
         if (status == DownloadStatus.analyzed) {
             content = String.format(
                 "<h4>%s</h4>" +
-                "%s", taskName, StreamLengthHelper.humanReadable(downloader.getRemoteFileSize()));
+                "%s", taskName, HumanReadHelper.readFileSize(downloader.getRemoteFileSize()));
+        } else if (status == DownloadStatus.downloading){
+            content = String.format(
+                "<h4>%s</h4>" +
+                "downloading  speed: %s    progress: %s  total size: %s",
+                taskName,
+                HumanReadHelper.readDownloadSpeed(downloader.getNewlyDownloadedSize()),
+                HumanReadHelper.readDownloadProgress(downloader.getDownloadedRate()),
+                HumanReadHelper.readFileSize(downloader.getRemoteFileSize()));
         } else {
             content = String.format(
                 "<h4>%s<br>" +
                 "<font color=%s>%s</font>", this.taskName, statusColor, status.toString());
         }
-        return "<html>" + content + "</html>";
+        setText("<html>" + content + "</html>");
+    }
+
+    @Override
+    public String toString() {
+        return getText();
     }
 }
