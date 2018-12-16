@@ -40,6 +40,11 @@ public class TaskList extends JList<DownloadTask> {
         return true;
     }
 
+    public void deleteRunningTask(String taskName)
+    {
+        listModel.deleteTask(taskName);
+    }
+
     public DownloadTask getTask(String taskName)
     {
         return listModel.getTask(taskName);

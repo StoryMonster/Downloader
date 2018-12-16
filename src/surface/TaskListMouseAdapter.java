@@ -11,14 +11,14 @@ import java.awt.event.ActionEvent;
 import surface.TaskList;
 
 public class TaskListMouseAdapter extends MouseAdapter {
-    TaskList taskLst;
+    TaskList taskList;
     JPopupMenu popup;
     JMenuItem downloadItem;
     JMenuItem deleteItem;
 
-    public TaskListMouseAdapter(TaskList taskLst)
+    public TaskListMouseAdapter(TaskList taskList)
     {
-        this.taskLst = taskLst;
+        this.taskList = taskList;
         
         downloadItem = new JMenuItem("download");
         downloadItem.addActionListener(new ActionListener() {
@@ -60,22 +60,26 @@ public class TaskListMouseAdapter extends MouseAdapter {
 
     private void showPopupMenu(MouseEvent event)
     {
-        taskLst.setSelectedIndex(taskLst.locationToIndex(event.getPoint()));
-        DownloadTask task = taskLst.getSelectedValue();
+        taskList.setSelectedIndex(taskList.locationToIndex(event.getPoint()));
+        DownloadTask task = taskList.getSelectedValue();
         if (!task.isRemoteFileAccessable()) {
             downloadItem.setVisible(false);
+        } else {
+            downloadItem.setVisible(true);
         }
-        popup.show(taskLst, event.getX(), event.getY());
+        popup.show(taskList, event.getX(), event.getY());
     }
 
     private void onDownloadChoosed() {
-        DownloadTask task = taskLst.getSelectedValue();
+        DownloadTask task = taskList.getSelectedValue();
         System.out.println("download item is pressed on task " + task.getName());
         task.startDownload();
     }
 
     private void onDeleteChoosed() {
-        DownloadTask task = taskLst.getSelectedValue();
-        System.out.println("delele item is pressed on task " + task.getName());
+        DownloadTask task = taskList.getSelectedValue();
+        String taskName = task.getName();
+        System.out.println("delele item is pressed on task " + taskName);
+        taskList.deleteTask(taskName);
     }
 }

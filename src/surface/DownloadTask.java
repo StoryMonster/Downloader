@@ -41,10 +41,25 @@ public class DownloadTask extends JLabel{
         downloader.download();
     }
 
+    public void stopDownload()
+    {
+        downloader.stopDownload();
+    }
+
     public void updateStatus(DownloadStatus status)
     {
-        this.status = status;
+        this.setStatus(status);
         this.updateContent();
+    }
+
+    public DownloadStatus getStatus()
+    {
+        return status;
+    }
+
+    public void setStatus(DownloadStatus status)
+    {
+        this.status = status;
     }
 
     private String getStatusColor()

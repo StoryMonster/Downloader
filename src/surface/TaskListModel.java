@@ -55,6 +55,7 @@ public class TaskListModel extends DefaultListModel<DownloadTask>{
             DownloadTask task = getElementAt(i);
             if (taskName.compareTo(task.getName()) == 0)
             {
+                task.stopDownload();
                 removeElementAt(i);
             }
         }

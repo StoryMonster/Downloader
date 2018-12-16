@@ -5,6 +5,7 @@ public enum DownloadStatus {
     analyzing,
     analyzed,
     downloading,
-    complete,
-    fail
+    complete,     // download successfully
+    stop,         // stop download
+    fail          // download fail
 }
