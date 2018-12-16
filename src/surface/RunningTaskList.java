@@ -8,8 +8,10 @@ import javax.swing.DefaultListCellRenderer;
 import java.awt.Component;
 import java.awt.Color;
 import java.awt.GridLayout;
+
 import surface.TaskListModel;
 import surface.TaskLabel;
+import surface.RunningTaskListMouseAdapter;
 
 public class RunningTaskList extends JList<TaskLabel> {
     TaskListModel listModel = new TaskListModel();
@@ -29,6 +31,7 @@ public class RunningTaskList extends JList<TaskLabel> {
                 return listCellRendererComponent;
             }
         });
+        addMouseListener(new RunningTaskListMouseAdapter(this));
     }
 
     public boolean addRunningTask(String taskName, String remoteAddr, String localAddr)

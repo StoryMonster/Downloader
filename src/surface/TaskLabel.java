@@ -4,6 +4,7 @@ import javax.swing.JLabel;
 
 import network.DownloadStatus;
 import network.FileDownloader;
+import utils.StreamLengthHelper;
 
 public class TaskLabel extends JLabel{
     String taskName;
@@ -28,6 +29,11 @@ public class TaskLabel extends JLabel{
     public void analyzeRemoteFile()
     {
         downloader.analyzeRemoteFile();
+    }
+
+    public boolean isRemoteFileAccessable()
+    {
+        return downloader.getRemoteFileSize() != -1;
     }
 
     public void startDownload()
@@ -60,10 +66,17 @@ public class TaskLabel extends JLabel{
     @Override
     public String toString() {
         String statusColor = getStatusColor();
-        return String.format(
-            "<html>" +
-            "<h4>%s<br>" +
-            "<font color=%s>%s</font>" +
-            "</html>", this.taskName, statusColor, status.toString());
+        String content;
+        if (status == DownloadStatus.analyzed) {
+            content = String.format(
+                "<h4>%s</h4>" +
+                "%s", taskName, StreamLengthHelper.humanReadable(downloader.getRemoteFileSize()));
+        }
+        else {
+            content = String.format(
+                "<h4>%s<br>" +
+                "<font color=%s>%s</font>", this.taskName, statusColor, status.toString());
+        }
+        return "<html>" + content + "</html>";
     }
 }

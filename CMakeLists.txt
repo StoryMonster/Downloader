@@ -18,8 +18,10 @@ add_jar(Downloader
         src/surface/RunningTaskList.java
         src/surface/TaskLabel.java
         src/surface/TaskListModel.java
+        src/surface/RunningTaskListMouseAdapter.java
         src/network/FileDownloader.java
         src/network/DownloadStatus.java
         src/utils/ConfigHelper.java
         src/utils/FileHelper.java
+        src/utils/StreamLengthHelper.java
         src/context/MainSurfaceContext.java)

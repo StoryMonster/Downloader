@@ -10,17 +10,18 @@ import network.DownloadStatus;
 
 
 class DownloadThread extends Thread {
-    String name;
+    String remoteAddr;
     URL remoteUrl;
     String fileToSave;
     long fileSize;
     long receivedBytesAmount = 0;
+    int receiveBufferSize = 1024;
     TaskLabel label;
 
-    public DownloadThread(String name, URL remoteUrl, String fileToSave, long fileSize, TaskLabel label)
+    public DownloadThread(String remoteAddr, URL remoteUrl, String fileToSave, long fileSize, TaskLabel label)
     {
-        super(name);
-        this.name = name;
+        super(remoteAddr);
+        this.remoteAddr = remoteAddr;
         this.remoteUrl = remoteUrl;
         this.fileToSave = fileToSave;
         this.fileSize = fileSize;
@@ -33,20 +34,19 @@ class DownloadThread extends Thread {
             label.updateStatus(DownloadStatus.downloading);
             BufferedInputStream in = new BufferedInputStream(remoteUrl.openStream());
             FileOutputStream outStream = new FileOutputStream(fileToSave);
-            byte data[] = new byte[1024];
+            byte data[] = new byte[receiveBufferSize];
             int byteContent;
-            while ((byteContent = in.read(data, 0, 1024)) != -1) {
+            while ((byteContent = in.read(data, 0, receiveBufferSize)) != -1) {
                 outStream.write(data, 0, byteContent);
-                Thread.sleep(1000);
                 receivedBytesAmount = receivedBytesAmount + byteContent;
                 System.out.println(receivedBytesAmount+"/"+fileSize);
             }
             in.close();
             outStream.close();
-            System.out.println("Thread " + name + " done");
+            System.out.println("download " + remoteAddr + " successfully");
             label.updateStatus(DownloadStatus.complete);
         } catch (Exception e) {
-            System.out.println("Thread " + name + " abort");
+            System.out.println("download " + remoteAddr + " fail");
             label.updateStatus(DownloadStatus.fail);
         }
     }
@@ -55,7 +55,8 @@ class DownloadThread extends Thread {
 public class FileDownloader {
     URL remoteUrl = null;
     String fileToSave;
-    long fileSize = 0;
+    String remoteFileAddr;
+    long fileSize = -1;
     DownloadThread dlThread;
     TaskLabel label;
 
@@ -66,6 +67,7 @@ public class FileDownloader {
             System.out.println("Creating downloader");
             this.remoteUrl = new URL(remoteFileAddress);
             this.fileToSave = fileToSave;
+            this.remoteFileAddr = remoteFileAddress;
             this.label = label;
         }
         catch (Exception e)
@@ -84,8 +86,9 @@ public class FileDownloader {
             fileSize = conn.getContentLengthLong();
             conn.disconnect();
             System.out.println("remote file size: " + fileSize + "bytes");
+            label.updateStatus(DownloadStatus.analyzed);
         } catch (Exception e) {
-            label.updateStatus(DownloadStatus.fail);
+            label.updateStatus(DownloadStatus.analyzed);
             System.out.println("Analyze remote file fail");
             throw new RuntimeException("Analyze remote file fail");
         }
@@ -97,7 +100,7 @@ public class FileDownloader {
 
     public void download()
     {
-        dlThread = new DownloadThread("name", remoteUrl, fileToSave, fileSize, label);
+        dlThread = new DownloadThread(remoteFileAddr, remoteUrl, fileToSave, fileSize, label);
         dlThread.start();
     }
 }

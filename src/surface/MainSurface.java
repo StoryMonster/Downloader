@@ -158,7 +158,6 @@ public class MainSurface extends JFrame {
                 if (lstDownloadingFiles.addRunningTask(taskName, remoteFileAddr, savedFilePath))
                 {
                     lstDownloadingFiles.getTask(taskName).analyzeRemoteFile();
-                    lstDownloadingFiles.getTask(taskName).startDownload();
                 }
                 else
                 {
