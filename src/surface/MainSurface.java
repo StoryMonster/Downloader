@@ -15,12 +15,12 @@ import java.awt.Toolkit;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import surface.RunningTaskList;
+import surface.TaskList;
 import utils.FileHelper;
 import context.MainSurfaceContext;
 
 public class MainSurface extends JFrame {
-    RunningTaskList lstDownloadingFiles = new RunningTaskList();
+    TaskList lstDownloadingFiles = new TaskList();
     JButton btnDlConfirm = new JButton("Download");
     JLabel lblDlFrom = new JLabel("Download from ");
     JLabel lblSaveAs = new JLabel("Save as ");

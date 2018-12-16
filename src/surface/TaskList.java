@@ -11,12 +11,12 @@ import java.awt.GridLayout;
 
 import surface.TaskListModel;
 import surface.DownloadTask;
-import surface.RunningTaskListMouseAdapter;
+import surface.TaskListMouseAdapter;
 
-public class RunningTaskList extends JList<DownloadTask> {
+public class TaskList extends JList<DownloadTask> {
     TaskListModel listModel = new TaskListModel();
 
-    public RunningTaskList() {
+    public TaskList() {
         setModel(listModel);
         setBorder(BorderFactory.createLineBorder(Color.black));
 
@@ -31,7 +31,7 @@ public class RunningTaskList extends JList<DownloadTask> {
                 return listCellRendererComponent;
             }
         });
-        addMouseListener(new RunningTaskListMouseAdapter(this));
+        addMouseListener(new TaskListMouseAdapter(this));
     }
 
     public boolean addRunningTask(String taskName, String remoteAddr, String localAddr)

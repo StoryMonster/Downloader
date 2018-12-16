@@ -15,10 +15,10 @@ set(CMAKE_JAVA_COMPILE_FLAGS -Xlint:unchecked -d build)
 add_jar(Downloader
         src/Downloader.java
         src/surface/MainSurface.java
-        src/surface/RunningTaskList.java
+        src/surface/TaskList.java
         src/surface/DownloadTask.java
         src/surface/TaskListModel.java
-        src/surface/RunningTaskListMouseAdapter.java
+        src/surface/TaskListMouseAdapter.java
         src/network/FileDownloader.java
         src/network/DownloadStatus.java
         src/utils/ConfigHelper.java

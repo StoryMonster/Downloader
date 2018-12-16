@@ -8,15 +8,15 @@ import javax.swing.JPopupMenu;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-import surface.RunningTaskList;
+import surface.TaskList;
 
-public class RunningTaskListMouseAdapter extends MouseAdapter {
-    RunningTaskList taskLst;
+public class TaskListMouseAdapter extends MouseAdapter {
+    TaskList taskLst;
     JPopupMenu popup;
     JMenuItem downloadItem;
     JMenuItem deleteItem;
 
-    public RunningTaskListMouseAdapter(RunningTaskList taskLst)
+    public TaskListMouseAdapter(TaskList taskLst)
     {
         this.taskLst = taskLst;
         
