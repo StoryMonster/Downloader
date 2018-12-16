@@ -10,10 +10,10 @@ import java.awt.Color;
 import java.awt.GridLayout;
 
 import surface.TaskListModel;
-import surface.TaskLabel;
+import surface.DownloadTask;
 import surface.RunningTaskListMouseAdapter;
 
-public class RunningTaskList extends JList<TaskLabel> {
+public class RunningTaskList extends JList<DownloadTask> {
     TaskListModel listModel = new TaskListModel();
 
     public RunningTaskList() {
@@ -40,7 +40,7 @@ public class RunningTaskList extends JList<TaskLabel> {
         return true;
     }
 
-    public TaskLabel getTask(String taskName)
+    public DownloadTask getTask(String taskName)
     {
         return listModel.getTask(taskName);
     }

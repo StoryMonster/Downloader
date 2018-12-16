@@ -5,9 +5,9 @@ import java.beans.PropertyChangeListener;
 
 import javax.swing.DefaultListModel;
 
-import surface.TaskLabel;
+import surface.DownloadTask;
 
-public class TaskListModel extends DefaultListModel<TaskLabel>{
+public class TaskListModel extends DefaultListModel<DownloadTask>{
     public void updateElementContent(String name)
     {
         for (int i = 0; i < getSize(); ++i)
@@ -23,7 +23,7 @@ public class TaskListModel extends DefaultListModel<TaskLabel>{
 
     public void addTask(String taskName, String remoteAddr, String localAddr)
     {
-        TaskLabel elem = new TaskLabel(taskName, remoteAddr, localAddr);
+        DownloadTask elem = new DownloadTask(taskName, remoteAddr, localAddr);
         PropertyChangeListener listener = new PropertyChangeListener(){
         
             @Override
@@ -35,11 +35,11 @@ public class TaskListModel extends DefaultListModel<TaskLabel>{
         addElement(elem);
     }
 
-    public TaskLabel getTask(String taskName)
+    public DownloadTask getTask(String taskName)
     {
         for (int i = 0; i < getSize(); ++i)
         {
-            TaskLabel task = getElementAt(i);
+            DownloadTask task = getElementAt(i);
             if (taskName.compareTo(task.getName()) == 0)
             {
                 return task;
@@ -52,7 +52,7 @@ public class TaskListModel extends DefaultListModel<TaskLabel>{
     {
         for (int i = 0; i < getSize(); ++i)
         {
-            TaskLabel task = getElementAt(i);
+            DownloadTask task = getElementAt(i);
             if (taskName.compareTo(task.getName()) == 0)
             {
                 removeElementAt(i);

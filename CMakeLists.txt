@@ -16,7 +16,7 @@ add_jar(Downloader
         src/Downloader.java
         src/surface/MainSurface.java
         src/surface/RunningTaskList.java
-        src/surface/TaskLabel.java
+        src/surface/DownloadTask.java
         src/surface/TaskListModel.java
         src/surface/RunningTaskListMouseAdapter.java
         src/network/FileDownloader.java

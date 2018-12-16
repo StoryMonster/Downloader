@@ -61,7 +61,7 @@ public class RunningTaskListMouseAdapter extends MouseAdapter {
     private void showPopupMenu(MouseEvent event)
     {
         taskLst.setSelectedIndex(taskLst.locationToIndex(event.getPoint()));
-        TaskLabel task = taskLst.getSelectedValue();
+        DownloadTask task = taskLst.getSelectedValue();
         if (!task.isRemoteFileAccessable()) {
             downloadItem.setVisible(false);
         }
@@ -69,13 +69,13 @@ public class RunningTaskListMouseAdapter extends MouseAdapter {
     }
 
     private void onDownloadChoosed() {
-        TaskLabel task = taskLst.getSelectedValue();
+        DownloadTask task = taskLst.getSelectedValue();
         System.out.println("download item is pressed on task " + task.getName());
         task.startDownload();
     }
 
     private void onDeleteChoosed() {
-        TaskLabel task = taskLst.getSelectedValue();
+        DownloadTask task = taskLst.getSelectedValue();
         System.out.println("delele item is pressed on task " + task.getName());
     }
 }

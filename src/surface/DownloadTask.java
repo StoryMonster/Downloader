@@ -6,14 +6,14 @@ import network.DownloadStatus;
 import network.FileDownloader;
 import utils.StreamLengthHelper;
 
-public class TaskLabel extends JLabel{
+public class DownloadTask extends JLabel{
     String taskName;
     String srcAddr;
     String localAddr;
     DownloadStatus status = DownloadStatus.none;
     FileDownloader downloader;
 
-    public TaskLabel(String taskName, String srcAddr, String localAddr)
+    public DownloadTask(String taskName, String srcAddr, String localAddr)
     {
         this.taskName = taskName;
         this.srcAddr = srcAddr;
@@ -71,8 +71,7 @@ public class TaskLabel extends JLabel{
             content = String.format(
                 "<h4>%s</h4>" +
                 "%s", taskName, StreamLengthHelper.humanReadable(downloader.getRemoteFileSize()));
-        }
-        else {
+        } else {
             content = String.format(
                 "<h4>%s<br>" +
                 "<font color=%s>%s</font>", this.taskName, statusColor, status.toString());

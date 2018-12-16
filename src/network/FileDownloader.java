@@ -5,7 +5,7 @@ import java.net.HttpURLConnection;
 import java.io.FileOutputStream;
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import surface.TaskLabel;
+import surface.DownloadTask;
 import network.DownloadStatus;
 
 
@@ -16,9 +16,9 @@ class DownloadThread extends Thread {
     long fileSize;
     long receivedBytesAmount = 0;
     int receiveBufferSize = 1024;
-    TaskLabel label;
+    DownloadTask label;
 
-    public DownloadThread(String remoteAddr, URL remoteUrl, String fileToSave, long fileSize, TaskLabel label)
+    public DownloadThread(String remoteAddr, URL remoteUrl, String fileToSave, long fileSize, DownloadTask label)
     {
         super(remoteAddr);
         this.remoteAddr = remoteAddr;
@@ -58,9 +58,9 @@ public class FileDownloader {
     String remoteFileAddr;
     long fileSize = -1;
     DownloadThread dlThread;
-    TaskLabel label;
+    DownloadTask label;
 
-    public FileDownloader(String remoteFileAddress, String fileToSave, TaskLabel label)
+    public FileDownloader(String remoteFileAddress, String fileToSave, DownloadTask label)
     {
         try
         {
