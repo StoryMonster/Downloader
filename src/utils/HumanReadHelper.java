@@ -27,10 +27,17 @@ public class HumanReadHelper {
         return String.format("%.2f%s", streamBytes*1.0/bytes[index], units[index]);
     }
 
-    static public String readDownloadSpeed(long bytes)
+    /*
+     * String readDownloadSpeed(long bytes, long interval)
+     * parameters:
+     *     bytes: increased bytes amount
+     *     interval: the collection duration, milliseconds
+     * Return value:
+     *     the download speed in human readable string, bytes/second
+     */
+    static public String readDownloadSpeed(long bytes, long interval)
     {
-        long period = 1000;
-        long bytesPerSecend = 1000 * bytes / period;
+        long bytesPerSecend = 1000 * bytes / interval;
         return String.format("%s/s", readFileSize(bytesPerSecend));
     }
 

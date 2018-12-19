@@ -29,9 +29,8 @@ public class ConfigHelper{
             f.close();
         } catch (Exception e)
         {
-            System.out.println("Cannot open file");
+            System.out.println("Cannot open configuration file: " + fileName);
         }
-        
     }
 
     public void updateNode(String nodeName, String value)
@@ -139,7 +138,6 @@ public class ConfigHelper{
                  switch(member.getNodeName())
                  {
                      case "localSaveDir": context.localSaveDir = text; break;
-                     case "remoteFilePath": context.remoteFilePath = text; break;
                      case "height": context.height = Integer.parseInt(text); break;
                      case "width": context.width = Integer.parseInt(text); break;
                  }
@@ -166,7 +164,6 @@ public class ConfigHelper{
                  switch(member.getNodeName())
                  {
                      case "localSaveDir": member.setTextContent(context.localSaveDir); break;
-                     case "remoteFilePath": member.setTextContent(context.remoteFilePath); break;
                      case "height": member.setTextContent(String.format("%d", context.height)); break;
                      case "width": member.setTextContent(String.format("%d", context.width)); break;
                  }

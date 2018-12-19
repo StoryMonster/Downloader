@@ -1,9 +1,6 @@
 package surface;
 
 import javax.swing.*;
-
-import javafx.scene.control.Dialog;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -15,9 +12,12 @@ import java.awt.Toolkit;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import surface.TaskList;
 import utils.FileHelper;
 import context.MainSurfaceContext;
+import log.*;
 
 public class MainSurface extends JFrame {
     TaskList lstDownloadingFiles = new TaskList();
@@ -36,7 +36,7 @@ public class MainSurface extends JFrame {
         context.localSaveDir = FileHelper.isDir(context.localSaveDir) ? context.localSaveDir : ".";
         this.fChooser = new JFileChooser(context.localSaveDir);
         this.lblSaveTo = new JLabel("Save to " + context.localSaveDir);
-        this.txtDlFrom = new JTextField(context.remoteFilePath);
+        this.txtDlFrom = new JTextField();
 
         initSurface();
     }
@@ -139,6 +139,18 @@ public class MainSurface extends JFrame {
             }
         });
 
+        txtDlFrom.getDocument().addDocumentListener(new DocumentListener() {
+            public void changedUpdate(DocumentEvent e) {
+                txtSaveAs.setText(FileHelper.getFileNameInUrl(txtDlFrom.getText()));
+            }
+            public void removeUpdate(DocumentEvent e) {
+                txtSaveAs.setText(FileHelper.getFileNameInUrl(txtDlFrom.getText()));
+            }
+            public void insertUpdate(DocumentEvent e) {
+                txtSaveAs.setText(FileHelper.getFileNameInUrl(txtDlFrom.getText()));
+            }
+        });
+
         btnDlConfirm.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -149,19 +161,16 @@ public class MainSurface extends JFrame {
                     return;
                 }
                 String fileNameToSave = txtSaveAs.getText();
-                fileNameToSave = fileNameToSave.length() != 0 ? fileNameToSave : FileHelper.getFileNameByPath(remoteFileAddr);
-                txtSaveAs.setText(fileNameToSave);
-                context.remoteFilePath = remoteFileAddr;
+                fileNameToSave = fileNameToSave.length() != 0 ? fileNameToSave : FileHelper.getFileNameInUrl("");
                 String savedFilePath = context.localSaveDir+"/"+fileNameToSave;
-                String taskName = String.copyValueOf(remoteFileAddr.toCharArray());
-
-                if (lstDownloadingFiles.addRunningTask(taskName, remoteFileAddr, savedFilePath))
-                {
+                String taskName = String.copyValueOf(fileNameToSave.toCharArray());
+                try {
+                    lstDownloadingFiles.addRunningTask(taskName, remoteFileAddr, savedFilePath);
                     lstDownloadingFiles.getTask(taskName).analyzeRemoteFile();
-                }
-                else
+                } catch(Exception ex)
                 {
-                    JOptionPane.showMessageDialog(null, "Can't create task");
+                    LogError.log(ex.toString());
+                    JOptionPane.showMessageDialog(null, ex.toString());
                 }
             }
         });

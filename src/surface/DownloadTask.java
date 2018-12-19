@@ -2,8 +2,8 @@ package surface;
 
 import javax.swing.JLabel;
 
-import network.DownloadStatus;
-import network.FileDownloader;
+import download.DownloadStatus;
+import download.FileDownloader;
 import utils.HumanReadHelper;
 
 public class DownloadTask extends JLabel{
@@ -87,7 +87,7 @@ public class DownloadTask extends JLabel{
                 "<h4>%s</h4>" +
                 "downloading  speed: %s    progress: %s  total size: %s",
                 taskName,
-                HumanReadHelper.readDownloadSpeed(downloader.getNewlyDownloadedSize()),
+                HumanReadHelper.readDownloadSpeed(downloader.getNewlyDownloadedSize(), 1000),
                 HumanReadHelper.readDownloadProgress(downloader.getDownloadedRate()),
                 HumanReadHelper.readFileSize(downloader.getRemoteFileSize()));
         } else {

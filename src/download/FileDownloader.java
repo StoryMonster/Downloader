@@ -1,4 +1,4 @@
-package network;
+package download;
 
 import java.net.URL;
 import java.net.HttpURLConnection;
@@ -6,7 +6,8 @@ import java.io.FileOutputStream;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import surface.DownloadTask;
-import network.DownloadStatus;
+import download.DownloadStatus;
+import log.*;
 
 
 class DownloadThread extends Thread {
@@ -16,7 +17,7 @@ class DownloadThread extends Thread {
     long fileSize;
     long receivedBytesAmount = 0;
     long lastReceivedBytes = 0;
-    int receiveBufferSize = 10*1024;
+    int receiveBufferSize = 1024*1024;
     DownloadTask dlTask;
 
     public DownloadThread(String remoteAddr, URL remoteUrl, String fileToSave, long fileSize, DownloadTask dlTask)
@@ -39,7 +40,6 @@ class DownloadThread extends Thread {
         long tempReceivedBytesAmount = receivedBytesAmount;
         long newlyDownloadedSize = tempReceivedBytesAmount - lastReceivedBytes;
         lastReceivedBytes = tempReceivedBytesAmount;
-        System.out.println("delta = " + (long)newlyDownloadedSize);
         return newlyDownloadedSize;
     }
 
@@ -54,18 +54,18 @@ class DownloadThread extends Thread {
             while (dlTask.getStatus() == DownloadStatus.downloading && (byteContent = in.read(data, 0, receiveBufferSize)) != -1) {
                 outStream.write(data, 0, byteContent);
                 receivedBytesAmount += byteContent;
-                System.out.println(receivedBytesAmount*100.0/fileSize + "%");
+                LogDebug.log(String.format("receiving %d/%d", receivedBytesAmount, fileSize));
             }
             in.close();
             outStream.close();
             if (dlTask.getStatus() == DownloadStatus.downloading) {
-                System.out.println("download " + remoteAddr + " successfully");
+                LogInfo.log("download successfully");
                 dlTask.updateStatus(DownloadStatus.complete);
-            } else {
-                System.out.println("download " + remoteAddr + " meet troubles");
+                return ;
             }
+            LogInfo.log("download interrupt");
         } catch (Exception e) {
-            System.out.println("download " + remoteAddr + " fail");
+            LogError.log("download fail");
             dlTask.updateStatus(DownloadStatus.fail);
         }
     }
@@ -101,14 +101,14 @@ public class FileDownloader {
         dlTask.updateStatus(DownloadStatus.analyzing);
         try {
             HttpURLConnection conn = (HttpURLConnection) remoteUrl.openConnection();
-            conn.setRequestMethod("GET");
+            conn.setRequestMethod("GET");            
             fileSize = conn.getContentLengthLong();
             conn.disconnect();
-            System.out.println("remote file size: " + fileSize + "bytes");
+            LogInfo.log("remote file size: " + fileSize + "bytes");
             dlTask.updateStatus(DownloadStatus.analyzed);
         } catch (Exception e) {
             dlTask.updateStatus(DownloadStatus.analyzed);
-            System.out.println("Analyze remote file fail");
+            LogError.log("Analyze remote file fail");
             throw new RuntimeException("Analyze remote file fail");
         }
     }
@@ -143,7 +143,7 @@ public class FileDownloader {
                 dlThread.join(5000);
             }
         } catch(Exception e) {
-            System.out.println("Cannot stop download thread");
+            LogError.log("Cannot stop download procedure");
         }
     }
 }

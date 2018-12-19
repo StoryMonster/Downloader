@@ -1,4 +1,4 @@
-package network;
+package download;
 
 public enum DownloadStatus {
     none,

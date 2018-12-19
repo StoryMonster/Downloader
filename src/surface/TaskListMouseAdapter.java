@@ -5,10 +5,15 @@ import java.awt.event.MouseEvent;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+
+import download.DownloadStatus;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 import surface.TaskList;
+import log.*;
+
 
 public class TaskListMouseAdapter extends MouseAdapter {
     TaskList taskList;
@@ -61,7 +66,7 @@ public class TaskListMouseAdapter extends MouseAdapter {
     {
         taskList.setSelectedIndex(taskList.locationToIndex(event.getPoint()));
         DownloadTask task = taskList.getSelectedValue();
-        if (!task.isRemoteFileAccessable()) {
+        if (!task.isRemoteFileAccessable() || task.getStatus() == DownloadStatus.downloading) {
             downloadItem.setVisible(false);
         } else {
             downloadItem.setVisible(true);
@@ -71,14 +76,19 @@ public class TaskListMouseAdapter extends MouseAdapter {
 
     private void onDownloadChoosed() {
         DownloadTask task = taskList.getSelectedValue();
-        System.out.println("download item is pressed on task " + task.getName());
+        LogInfo.log("Download task " + task.getName());
+        if (task.getStatus() == DownloadStatus.complete)
+        {
+            String message = "re-download " + task.getName() + "?";
+            JOptionPane.showMessageDialog(null, message);
+        }
         task.startDownload();
     }
 
     private void onDeleteChoosed() {
         DownloadTask task = taskList.getSelectedValue();
         String taskName = task.getName();
-        System.out.println("delele item is pressed on task " + taskName);
+        LogInfo.log("Delete task " + taskName);
         taskList.deleteTask(taskName);
     }
 }
